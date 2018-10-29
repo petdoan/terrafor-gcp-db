@@ -18,6 +18,7 @@ the project name from the environment variable.
 
 ```bash
 export GOOGLE_CLOUD_PROJECT={{project-id}}
+export GCLOUD_REGION="us-west1"
 ```
 
 After that, let's get Terraform started. Run the following to pull in the providers.
