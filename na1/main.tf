@@ -2,7 +2,7 @@ variable "region" {
   default = "us-west1"
 }
 variable "node_count" {
-  default = "1"
+  default = "3"
 }
 variable "image_url" {
   default = "rhel-cloud/rhel-7"
@@ -11,7 +11,7 @@ variable "machine_type" {
   default = "n1-standard-2"
 }
 variable "pod_name" {
-  default = "pdoan"
+  default = "na1"
 }
 
 data "google_compute_zones" "available" {}
@@ -66,25 +66,27 @@ resource "google_compute_instance" "database" {
     }
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "mkdir -p /tmp/tarball",
-      "cd /tmp/tarball",
-      "gsutil cp gs://oracle-tarball-bucket/* .",
-      "chmod +x /tmp/tarball/*.sh",
-      "/tmp/tarball/step0.sh >> /tmp/step0.log",
-      "/tmp/tarball/step1.sh >> /tmp/step1.log",
-      "/tmp/tarball/step2.sh >> /tmp/step2.log",
-      "su - oracle -c /tmp/tarball/step3.sh >> /tmp/step3.log",
-      "/tmp/tarball/step4.sh >> /tmp/step4.log",
-      "/tmp/tarball/step5.sh >> /tmp/step5.log",
-      "/tmp/tarball/step6.sh >> /tmp/step6.log",
-      "su - oracle -c /tmp/tarball/step7.sh >> /tmp/step7.log",
-      "/tmp/tarball/step8.sh >> /tmp/step8.log",
-      "su - oracle -c /tmp/tarball/step9.sh >> /tmp/step9.log",
-      "/tmp/tarball/step10.sh >> /tmp/step10.log"
-   ]
+
+  metadata {
+    startup-script = <<SCRIPT
+mkdir -p /tmp/tarball
+cd /tmp/tarball
+gsutil cp gs://oracle-tarball-bucket/* .
+chmod +x /tmp/tarball/*.sh
+/tmp/tarball/step0.sh >> /tmp/step0.log
+/tmp/tarball/step1.sh >> /tmp/step1.log
+/tmp/tarball/step2.sh >> /tmp/step2.log
+su - oracle -c /tmp/tarball/step3.sh >> /tmp/step3.log
+/tmp/tarball/step4.sh >> /tmp/step4.log
+/tmp/tarball/step5.sh >> /tmp/step5.log
+/tmp/tarball/step6.sh >> /tmp/step6.log
+su - oracle -c /tmp/tarball/step7.sh >> /tmp/step7.log
+/tmp/tarball/step8.sh >> /tmp/step8.log
+su - oracle -c /tmp/tarball/step9.sh >> /tmp/step9.log
+/tmp/tarball/step10.sh >> /tmp/step10.log
+    SCRIPT
   }
+
 
   service_account {
     scopes = ["userinfo-email", "compute-rw", "storage-rw"]
