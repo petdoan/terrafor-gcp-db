@@ -55,6 +55,10 @@ Terraform will show you what it plans to do, and prompt you to accept. Type "yes
 yes
 ```
 
+Or pass in the parameters
+```bash
+terraform apply -var node_count=3 -var pod_name="cs100"
+```
 
 ## Post-Apply
 
