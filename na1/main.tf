@@ -1,3 +1,17 @@
+variable "ssh_public_key_filepath" {
+  description = "Filepath for the ssh public key"
+  type = "string"
+
+  default = "tfuser.pub"
+}
+
+variable "ssh_private_key_filepath" {
+  description = "Filepath for the ssh private key"
+  type = "string"
+
+  default = "tfuser"
+}
+
 variable "region" {
   default = "us-west1"
 }
@@ -16,34 +30,11 @@ variable "pod_name" {
 
 data "google_compute_zones" "available" {}
 
-resource "google_compute_disk" "data-disk-1" {
-    count = "${var.node_count}"
-    name = "${var.pod_name}-data-1-${count.index}"
-    type  = "pd-ssd"
-    zone = "${element(data.google_compute_zones.available.names, count.index)}"
-    size = "20"
-}
-
-resource "google_compute_disk" "data-disk-2" {
-    count = "${var.node_count}"
-    name = "${var.pod_name}-data-2-${count.index}"
-    type  = "pd-ssd"
-    zone = "${element(data.google_compute_zones.available.names, count.index)}"
-    size = "20"
-}
-
-resource "google_compute_disk" "data-disk-3" {
-    count = "${var.node_count}"
-    name = "${var.pod_name}-data-3-${count.index}"
-    type  = "pd-ssd"
-    zone = "${element(data.google_compute_zones.available.names, count.index)}"
-    size = "20"
-}
-
 resource "google_storage_bucket" "oracle-tarball" {
   name     = "oracle-tarball-bucket"
   location = "${var.region}"
 }
+
 resource "google_compute_instance" "database" {
   count = "${var.node_count}"
   name = "${var.pod_name}-db${count.index + 1}-1"
@@ -66,34 +57,62 @@ resource "google_compute_instance" "database" {
     }
   }
 
-
-  metadata {
-    startup-script = <<SCRIPT
-mkdir -p /tmp/tarball
-cd /tmp/tarball
-gsutil cp gs://oracle-tarball-bucket/* .
-chmod +x /tmp/tarball/*.sh
-/tmp/tarball/step0.sh >> /tmp/step0.log
-/tmp/tarball/step1.sh >> /tmp/step1.log
-/tmp/tarball/step2.sh >> /tmp/step2.log
-su - oracle -c /tmp/tarball/step3.sh >> /tmp/step3.log
-/tmp/tarball/step4.sh >> /tmp/step4.log
-/tmp/tarball/step5.sh >> /tmp/step5.log
-/tmp/tarball/step6.sh >> /tmp/step6.log
-su - oracle -c /tmp/tarball/step7.sh >> /tmp/step7.log
-/tmp/tarball/step8.sh >> /tmp/step8.log
-su - oracle -c /tmp/tarball/step9.sh >> /tmp/step9.log
-/tmp/tarball/step10.sh >> /tmp/step10.log
-    SCRIPT
-  }
-
-
   service_account {
     scopes = ["userinfo-email", "compute-rw", "storage-rw"]
   }
 
-#  metadata {
-#    sshKeys = "oracle:${file(var.ssh_public_key_filepath)}"
-#  }
+  metadata {
+    sshKeys = "tfuser:${file(var.ssh_public_key_filepath)}"
+  }
+  
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "tfuser"
+      timeout     = "500s"
+      private_key = "${file(var.ssh_private_key_filepath)}"
+    }
+
+    inline = [
+      "sudo mkdir -p /tmp/tarball",
+      "cd /tmp/tarball",
+      "sudo gsutil cp gs://oracle-tarball-bucket/* .",
+      "sudo chmod +x /tmp/tarball/*.sh"
+    ]
+  }
+
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      user        = "tfuser"
+      timeout     = "500s"
+      private_key = "${file(var.ssh_private_key_filepath)}"
+    }
+
+    inline = [
+      "echo 'Run step0.sh'",
+      "sudo /tmp/tarball/0.sh >> /tmp/step0.log",
+      "echo 'Run step1.sh'",
+      "sudo /tmp/tarball/1.sh >> /tmp/step1.log",
+      "echo 'Run step2.sh'",
+      "sudo /tmp/tarball/2.sh >> /tmp/step2.log",
+      "echo 'Run step3.sh'",
+      "sudo /tmp/tarball/3.sh >> /tmp/step3.log",
+      "echo 'Run step4.sh'",
+      "sudo /tmp/tarball/4.sh >> /tmp/step4.log",
+      "echo 'Run step5.sh'",
+      "sudo /tmp/tarball/5.sh >> /tmp/step5.log",
+      "echo 'Run step6.sh'",
+      "sudo /tmp/tarball/6.sh >> /tmp/step6.log",
+      "echo 'Run step7.sh'",
+      "su - oracle -c /tmp/tarball/7.sh >> /tmp/step7.log",
+      "echo 'Run step8.sh'",
+      "sudo /tmp/tarball/8.sh >> /tmp/step8.log",
+      "echo 'Run step9.sh'",
+      "su - oracle -c /tmp/tarball/9.sh >> /tmp/step9.log",
+      "echo 'Run step10.sh'",
+      "sudo /tmp/tarball/10.sh >> /tmp/step10.log"
+    ]
+  }
 
 }
