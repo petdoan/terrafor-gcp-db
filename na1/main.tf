@@ -87,7 +87,6 @@ resource "google_compute_instance" "database" {
     inline = [
       "echo 'Run install_oracle.sh'",
       "sudo /tmp/tarball/install_oracle.sh"
-      "echo 'All done'"
     ]
   }
 
