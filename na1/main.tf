@@ -85,28 +85,9 @@ resource "google_compute_instance" "database" {
     }
 
     inline = [
-      "echo 'Run step0.sh'",
-      "sudo /tmp/tarball/step0.sh >> /tmp/step0.log",
-      "echo 'Run step1.sh'",
-      "sudo /tmp/tarball/step1.sh >> /tmp/step1.log",
-      "echo 'Run step2.sh'",
-      "sudo /tmp/tarball/step2.sh >> /tmp/step2.log",
-      "echo 'Run step3.sh'",
-      "sudo /tmp/tarball/step3.sh >> /tmp/step3.log",
-      "echo 'Run step4.sh'",
-      "sudo /tmp/tarball/step4.sh >> /tmp/step4.log",
-      "echo 'Run step5.sh'",
-      "sudo /tmp/tarball/step5.sh >> /tmp/step5.log",
-      "echo 'Run step6.sh'",
-      "sudo /tmp/tarball/step6.sh >> /tmp/step6.log",
-      "echo 'Run step7.sh'",
-      "su - oracle -c /tmp/tarball/step7.sh >> /tmp/step7.log",
-      "echo 'Run step8.sh'",
-      "sudo /tmp/tarball/step8.sh >> /tmp/step8.log",
-      "echo 'Run step9.sh'",
-      "su - oracle -c /tmp/tarball/step9.sh >> /tmp/step9.log",
-      "echo 'Run step10.sh'",
-      "sudo /tmp/tarball/step10.sh >> /tmp/step10.log"
+      "echo 'Run install_oracle.sh'",
+      "sudo /tmp/tarball/install_oracle.sh"
+      "echo 'All done'"
     ]
   }
 
