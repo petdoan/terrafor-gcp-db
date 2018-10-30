@@ -12,6 +12,7 @@ Terraform provisions real GCP resources, so anything you create in this session 
 
 ## Terraforming!
 
+
 Let's use {{project-id}} with Terraform! Click the Cloud Shell icon below to copy the command
 to your shell, and then run it from the shell by pressing Enter/Return. Terraform will pick up
 the project name from the environment variable.
@@ -23,6 +24,11 @@ export GOOGLE_CLOUD_PROJECT={{project-id}}
 Choose the region
 ```bash
 export GCLOUD_REGION="us-west1"
+```
+
+Generate ssh kep to run the remote-exec
+```bash
+ssh-keygen -f tfuser
 ```
 
 After that, let's get Terraform started. Run the following to pull in the providers.
