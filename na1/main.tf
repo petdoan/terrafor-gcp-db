@@ -30,11 +30,6 @@ variable "pod_name" {
 
 data "google_compute_zones" "available" {}
 
-resource "google_storage_bucket" "oracle-tarball" {
-  name     = "oracle-tarball-bucket"
-  location = "${var.region}"
-}
-
 resource "google_compute_instance" "database" {
   count = "${var.node_count}"
   name = "${var.pod_name}-db${count.index + 1}-1"
