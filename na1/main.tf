@@ -19,8 +19,7 @@ variable "node_count" {
   default = "1"
 }
 variable "image_url" {
-  default = "pie-ol7u4"
-  #default = "rhel-cloud/rhel-7"
+  default = "rhel-cloud/rhel-7"
 }
 variable "machine_type" {
   default = "n1-standard-2"
