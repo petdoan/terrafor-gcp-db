@@ -19,13 +19,14 @@ variable "node_count" {
   default = "1"
 }
 variable "image_url" {
-  default = "rhel-cloud/rhel-7"
+  default = "pie-ol7u4"
+  #default = "rhel-cloud/rhel-7"
 }
 variable "machine_type" {
   default = "n1-standard-2"
 }
 variable "pod_name" {
-  default = "na1"
+  default = "cs1"
 }
 
 data "google_compute_zones" "available" {}
@@ -40,7 +41,7 @@ resource "google_compute_instance" "database" {
   boot_disk {
     initialize_params {
       image = "${var.image_url}"
-      size = 100
+      size = 300
     }
   }
 
