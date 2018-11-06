@@ -25,10 +25,42 @@ variable "machine_type" {
   default = "n1-standard-2"
 }
 variable "pod_name" {
-  default = "cs1"
+  default = "cc1"
 }
 
 data "google_compute_zones" "available" {}
+
+resource "google_compute_disk" "data-disk-1" {
+    count = "${var.node_count}"
+    name = "${var.pod_name}-data-1-${count.index}"
+    type  = "pd-ssd"
+    zone = "${element(data.google_compute_zones.available.names, count.index)}"
+    size = "50"
+}
+
+resource "google_compute_disk" "data-disk-2" {
+    count = "${var.node_count}"
+    name = "${var.pod_name}-data-2-${count.index}"
+    type  = "pd-ssd"
+    zone = "${element(data.google_compute_zones.available.names, count.index)}"
+    size = "50"
+}
+
+resource "google_compute_disk" "data-disk-3" {
+    count = "${var.node_count}"
+    name = "${var.pod_name}-data-3-${count.index}"
+    type  = "pd-ssd"
+    zone = "${element(data.google_compute_zones.available.names, count.index)}"
+    size = "50"
+}
+
+resource "google_compute_disk" "data-disk-4" {
+    count = "${var.node_count}"
+    name = "${var.pod_name}-data-4-${count.index}"
+    type  = "pd-ssd"
+    zone = "${element(data.google_compute_zones.available.names, count.index)}"
+    size = "50"
+}
 
 resource "google_compute_instance" "database" {
   count = "${var.node_count}"
@@ -44,6 +76,22 @@ resource "google_compute_instance" "database" {
     }
   }
 
+  attached_disk {
+    source = "${element(google_compute_disk.data-disk-1.*.name, count.index)}"
+  }
+  
+  attached_disk {
+    source = "${element(google_compute_disk.data-disk-2.*.name, count.index)}"
+  }
+  
+  attached_disk {
+    source = "${element(google_compute_disk.data-disk-3.*.name, count.index)}"
+  }
+  
+  attached_disk {
+    source = "${element(google_compute_disk.data-disk-4.*.name, count.index)}"
+  }
+  
   network_interface {
     network = "default"
 
